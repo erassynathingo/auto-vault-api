@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const requestLogger = require('./middlewares/requestLogger');
 const routes = require('./routes');
@@ -11,6 +12,7 @@ const connectDB = require('./db/connection');
 
 // Middlewares
 app.use(bodyParser.json());
+app.use(morgan('dev'))
 app.use(cors());
 app.use(requestLogger);
 app.use(express.json());
@@ -18,14 +20,19 @@ app.use(helmet()); // set HTTP headers for security
 
 //Routes
 app
+	.use('/api', routes)
+	.use('/api', require('./routes/fileRoutes'))
+	.use('/api', require('./routes/projectRoutes'))
+
 	.use('/api', (req, res)=>{
 		res.status(200).json({
 			message: 'Auto-Vault API'
 		})
 	})
-	.use('/api', routes)
-	.use('/api', require('./routes/fileRoutes'))
-	.use('/api', require('./routes/projectRoutes'));
+	.use(function(req, res, next) {
+		
+		  res.status(404).json({ error: 'Route Not found' });
+	  });
 
 const PORT = process.env.PORT || 3001;
 
