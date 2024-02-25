@@ -18,6 +18,11 @@ app.use(helmet()); // set HTTP headers for security
 
 //Routes
 app
+	.use('/api', (req, res)=>{
+		res.status(200).json({
+			message: 'Auto-Vault API'
+		})
+	})
 	.use('/api', routes)
 	.use('/api', require('./routes/fileRoutes'))
 	.use('/api', require('./routes/projectRoutes'));
